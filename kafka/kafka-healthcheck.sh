@@ -20,4 +20,4 @@ echo "Health check passed"
 exit 0
 
 # Keep the script running
-wait
+# wait
