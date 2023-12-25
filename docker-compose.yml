@@ -106,6 +106,9 @@ services:
       - 9308:9308
     networks:
       - kafka-net
+    depends_on:
+      kafka1:
+        condition: service_healthy
 
 networks:
   kafka-net:
