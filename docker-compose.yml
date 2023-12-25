@@ -47,6 +47,11 @@ services:
       interval: 5s
       timeout: 30s
       retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: "0.9" # Limit to 50% of a CPU
+          memory: 1638M # Limit to 256MB of memory
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: "zoo1:2181"
@@ -83,6 +88,16 @@ services:
       - kafka-net
     depends_on:
       - kafka1
+    node_exporter:
+      image: quay.io/prometheus/node-exporter:latest
+      container_name: node_exporter
+      command:
+        - "--path.rootfs=/host"
+      network_mode: host
+      pid: host
+      restart: unless-stopped
+      volumes:
+        - "/:/host:ro,rslave"
 networks:
   kafka-net:
     driver: bridge
