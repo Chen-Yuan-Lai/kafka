@@ -40,6 +40,8 @@ services:
     ports:
       - "9092:9092"
       - "29092:29092"
+      # - "9998:9998"
+      - "7071:7071"
     volumes:
       - "kafka1_data:/var/lib/kafka/data"
     healthcheck:
@@ -51,8 +53,12 @@ services:
       resources:
         limits:
           cpus: "0.9" # Limit to 50% of a CPU
-          memory: 1638M # Limit to 256MB of memory
+          memory: 1638M
     environment:
+      # KAFKA_JMX_PORT: 9998
+      JMX_PROMETHEUS_PORT: 7071
+      KAFKA_OPTS: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=localhost"
+      EXTRA_ARGS: "-javaagent:/opt/kafka/jmx_prometheus_javaagent.jar=7071:/opt/kafka/jmx-exporter-config.yml"
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: "zoo1:2181"
       KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka1:19092,EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9092,DOCKER://host.docker.internal:29092
@@ -99,17 +105,6 @@ services:
     restart: unless-stopped
     volumes:
       - "/:/host:ro,rslave"
-  kafka_exporter:
-    image: danielqsj/kafka-exporter
-    command: ["--kafka.server=kafka1:19092"]
-    ports:
-      - 9308:9308
-    networks:
-      - kafka-net
-    depends_on:
-      kafka1:
-        condition: service_healthy
-
 networks:
   kafka-net:
     driver: bridge
