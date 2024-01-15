@@ -49,11 +49,11 @@ services:
       interval: 5s
       timeout: 30s
       retries: 3
-    deploy:
-      resources:
-        limits:
-          cpus: "0.9" # Limit to 50% of a CPU
-          memory: 1638M
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: "0.9"
+    #       memory: 1638M
     environment:
       # KAFKA_JMX_PORT: 9998
       JMX_PROMETHEUS_PORT: 7071
